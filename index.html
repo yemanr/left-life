@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>YOU</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        .quote {
+            margin: 40px;
+            padding: 20px;
+            background: #eee;
+            border-radius: 5px;
+        }
+
+        .quote::before {
+            content: '\201C';
+        }
+
+        .quote::after {
+            content: '\201D';
+        }
+
+        .quote--cite {
+            margin-left: 40px;
+            color: #666;
+        }
+
+        .progress {
+            position: relative;
+            display: flex;
+            margin: 20px;
+            height: 30px;
+            background-color: #dedede;
+            line-height: 30px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .progress--passed {
+            overflow: hidden;
+            background-color: #666;
+        }
+        
+        .progress--left {
+            flex: 1;
+            overflow: hidden;
+            background-color: green;
+        }
+
+        .progress--marker {
+            display: none;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: rgba(255, 0, 0, 0.7);
+        }
+
+        .progress--marker::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: -3px;
+            border-style: solid;
+            border-width: 0 4px 4px 4px;
+            border-color: transparent transparent #333 transparent;
+        }
+
+        .progress--marker::after {
+            content: attr(marker);
+            position: absolute;
+            padding: 3px;
+            top: 34px;
+            left: -11px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 4px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="progress">
+            <div class="progress--passed"></div>
+            <div class="progress--left"></div>
+            <mark class="progress--marker" marker="30"></mark>
+            <mark class="progress--marker" marker="40"></mark>
+            <mark class="progress--marker" marker="50"></mark>
+            <mark class="progress--marker" marker="60"></mark>
+            <mark class="progress--marker" marker="76"></mark>
+            <mark class="progress--marker" marker="80"></mark>
+            <mark class="progress--marker" marker="90"></mark>
+            <mark class="progress--marker" marker="100"></mark>
+            <mark class="progress--marker" marker="117"></mark>
+        </div>
+    </main>
+    <blockquote class="quote">
+        <p>2015年：</p>
+        <p>平均预期寿命(岁) 76.34</p>
+        <p>男性平均预期寿命(岁) 73.64</p>
+        <p>女性平均预期寿命(岁) 79.43</p>
+    </blockquote>
+    <cite class="quote--cite">数据来源：http://data.stats.gov.cn/easyquery.htm?cn=C01&zb=A0304&sj=2017</cite>
+    <script>
+        const LONG_AGE = 1.17;
+        const AVG_AGE = 0.7634;
+        const LIVE_NORMAL = true;
+
+        const BASE_AGE = LIVE_NORMAL ? AVG_AGE : LONG_AGE;
+        function qs(str) {
+            const result = {};
+            const re = /([^=?#&]*)=([^?#&]*)/g;
+            let arr;
+            while((arr = re.exec(str)) !== null) {
+                result[arr[1]] = arr[2];
+            }
+            return result;
+        }
+        
+        const age = parseInt(qs(location.search).age || 18);
+        document.title += `_${age}`;
+        const elePassed = document.querySelector('.progress--passed');
+        const eleLeft = document.querySelector('.progress--left');
+        const nowPercent = age / BASE_AGE;
+        elePassed.style.width = `${nowPercent}%`;
+
+        let passedText, leftText;
+        if (age < 18) {
+            leftText = '天上地下，哪都去得';
+        } else if (age === 18) {
+            leftText = '要记住你18了哦';
+        } else if (age >= 50){
+            leftText = '少管儿女了';
+        } else {
+            leftText = '且行且珍惜';
+        }
+
+        passedText && (elePassed.innerText = passedText);
+        leftText && (eleLeft.innerText = leftText);
+    
+        document.querySelectorAll('.progress--marker').forEach(marker => {
+            const width = parseInt(marker.getAttribute('marker')) / BASE_AGE;
+            if (width>= nowPercent && width <= 100) {
+                marker.style.display = 'block';
+                marker.style.left = `${width}%`;
+            }
+        });
+    </script>
+</body>
+</html>
